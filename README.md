@@ -48,7 +48,5 @@ npm run lint
 ```
   获得上传成功后的图片路径
 ```
-@change="handleChange" :url="enterpriseData.businessLicenseUrl" :required="true"
-
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
