@@ -1,11 +1,11 @@
 {
   "name": "cy-upload-image",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "上传图片基础组件",
-  "main":"dist/cy-upload-image.common.js",
-  "keyword":"upload image cy",
-  "author":"youngeffort",
-  "private":false,
+  "main": "dist/cy-upload-image.common.js",
+  "keyword": "upload image cy",
+  "author": "youngeffort",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -20,9 +20,13 @@
     "@vue/cli-plugin-babel": "^3.8.0",
     "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.8.0",
+    "axios": "^0.19.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "less": "^3.9.0",
+    "less-loader": "^5.0.0",
+    "mint-ui": "^2.2.13",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {

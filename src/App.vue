@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <cyUploadImage msg="Welcome to Your Vue.js App"/>
+    <cyUploadImage
+
+    />
   </div>
 </template>
 

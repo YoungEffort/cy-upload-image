@@ -1,58 +1,224 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class='upload-img'>
+    <div class="img-box" v-if="url==''">
+      <div class="parent" v-if="imgType=='default'" @click="handlePopup">
+        <img src="../assets/images/common/photo_icon@2x.png" alt="" class="img-1">
+      </div>
+      <img src="../assets/images/common/身份证示范-正面@3x.png" alt="" v-if="imgType=='idcardFront'" class="img-2" @click="handlePopup">
+      <img src="../assets/images/common/身份证示范-背面@3x.png" alt="" v-if="imgType=='idcardBack'" class="img-2" @click="handlePopup">
+    </div>
+    <div class="img-box-sc" v-if="url!=''">
+      <img :src="convertUrl" alt="" @click="handleView(convertUrl)">
+      <img src="../assets/images/common/蒙版组 3.png" @click="handleDelete()" class="img-flag">
+    </div>
+    <div class="text">
+      <span class="col-red" v-if="required">*</span>
+      <slot></slot>
+    </div>
+    <div class="view-img-box" v-show="isView">
+      <img :src="viewImg" alt="" class="view-img" @click="handleView('')">
+    </div>
+    <mt-popup v-model="popupVisible" position="bottom">
+      <div class="btn1">
+        <span>上传照片</span>
+        <input ref="photoref" type="file" accept="image/*" @change="update($event)"/>
+      </div>
+      <div class="btn2" @click="popupVisible=false">取消</div>
+    </mt-popup>
   </div>
 </template>
 
 <script>
+//import { uploadZoomimg } from '@/api/uploadimg'
+import { Popup } from 'mint-ui'
+import 'mint-ui/lib/popup/style.css'
+import Axios from 'axios'
 export default {
-  name: 'HelloWorld',
+  name: 'cy-uload-image',
+  watch: {
+    url: function (val) {
+      this.convertUrl = val
+      if (!val) { this.$refs.photoref.value = '' }
+    }
+  },
+  data() {
+    return {
+      popupVisible: false,
+      convertUrl: '',
+      viewImg: '',
+      fullUrl: '',
+      isView: false
+    }
+  },
   props: {
-    msg: String
+    imgType: {
+      type: String,
+      default: 'default'
+    },
+    required: {
+      type: Boolean,
+      default: true
+    },
+    url: {
+      type: String,
+      default: ''
+    },
+    requesUrl: {
+      type: String,
+      default: ''
+    }
+  },
+  components: {
+    mtPopup: Popup
+  },
+  methods: {
+    update(e) {
+      let vm = this
+      let img1 = e.target.files[0]
+      let form = new FormData()
+      vm.popupVisible = false
+      this.$globalToast.loading({})
+      form.append('file', img1, img1.name)
+      Axios.request({
+        url: vm.requesUrl,
+        method: 'post',
+        data: form
+      }).then(res => {
+          this.$globalToast.close()
+          if (res.code === '500') {
+            vm.$refs.photoref.value = ''
+            this.$globalToast.warning({
+              message: '上传失败，请重新上传'
+            })
+          }
+          var data = res[0]
+          vm.convertUrl = data.convertUrl
+          vm.fullUrl = data.fullUrl
+          vm.$emit('change', vm.convertUrl)
+        })
+        .catch(() => {
+          vm.$refs.photoref.value = ''
+          this.$globalToast.close()
+          this.$globalToast.warning({
+            message: '上传失败，请重新上传'
+          })
+        })
+    },
+    handlePopup() {
+      this.popupVisible = true
+    },
+    handleDelete() {
+      var vm = this
+      vm.convertUrl = ''
+      vm.fullUrl = ''
+      vm.$refs.photoref.value = ''
+      vm.$emit('change', vm.convertUrl)
+    },
+    handleView(convertUrl) {
+      var vm = this
+      vm.isView = !vm.isView
+      vm.viewImg = convertUrl
+    }
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
+<style scoped lang='less'>
+.upload-img {
+  width: 170px;
   display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+  .parent {
+    position: relative;
+    height: 100px;
+    border: 1px solid #9aaade;
+    border-radius: 5px;
+    .img-1 {
+      width: 50px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+    }
+  }
+  .img-box {
+    height: 110px;
+  }
+  .img-2 {
+    width: 170px;
+  }
+  .text {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    .col-red {
+      color: #e90000;
+      margin-right: 3px;
+    }
+  }
+  .btn1 {
+    text-align: center;
+    height: 40px;
+    font-size: 14px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #333;
+    position: relative;
+    input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
+    span {
+      float: left;
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+    }
+  }
+  .btn2 {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+    color: #333;
+  }
+  .img-box-sc {
+    height: 100px;
+    border: 1px solid #e6eaf6;
+    position: relative;
+    img {
+      width: 100%;
+      height: 100px;
+    }
+    .img-flag {
+      width: 25px;
+      height: 25px;
+      position: absolute;
+      top: -8px;
+      right: -7.5px;
+    }
+  }
+  .view-img-box {
+    height: 100%;
+    line-height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+    z-index: 10;
+    text-align: left;
+    .view-img {
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .mint-popup{
+    width: 100%;
+  }
 }
 </style>
