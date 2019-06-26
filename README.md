@@ -42,7 +42,7 @@ npm run lint
 ### requesUrl 上传url type: String
 ```
   默认：''
-```'
+```
 ```
 ### @change 图片上传成功的回调图片 type: Function
 ```
