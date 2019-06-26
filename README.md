@@ -43,7 +43,6 @@ npm run lint
 ```
   默认：''
 ```
-```
 ### @change 图片上传成功的回调图片 type: Function
 ```
   获得上传成功后的图片路径
