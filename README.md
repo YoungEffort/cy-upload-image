@@ -1,4 +1,4 @@
-# hello-world
+# upload-img组件
 
 ## Project setup
 ```
@@ -24,6 +24,23 @@ npm run test
 ```
 npm run lint
 ```
+
+### usage
+
+#### props
+参数     | 说明       |  类型    | 可选值         |  默认值
+-|-|-|-|-
+imgType  | 图片背景图类型       | String  | default idcardFront idcardBack    | default |
+required | 是否显示 * 号        | Boolean | -                            | true |
+url      | 上传成功图片地址      | String  | -                                | ' ' |
+
+#### events
+事件名称     | 说明          |  回调参数
+-|-|-|-|-
+change      | 图片上传触发   | 上传成功的图片url 
+
+
+
 
 ### imgType 默认参数 type: String
 ```
