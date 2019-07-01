@@ -63,7 +63,7 @@ export default {
       type: String,
       default: ''
     },
-    requesUrl: {
+    requestUrl: {
       type: String,
       default: ''
     }
@@ -80,7 +80,7 @@ export default {
       this.$globalToast.loading({})
       form.append('file', img1, img1.name)
       Axios.request({
-        url: vm.requesUrl,
+        url: vm.requestUrl,
         method: 'post',
         data: form
       }).then(res => {
