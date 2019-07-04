@@ -85,13 +85,13 @@ export default {
         data: form
       }).then(res => {
           this.$globalToast.close()
-          if (res.code === '500') {
+          if (res.status === '500') {
             vm.$refs.photoref.value = ''
             this.$globalToast.warning({
               message: '上传失败，请重新上传'
             })
           }
-          var data = res[0]
+          var data = res.data[0]
           vm.convertUrl = data.convertUrl
           vm.fullUrl = data.fullUrl
           vm.$emit('change', vm.convertUrl)
