@@ -1,6 +1,6 @@
 {
   "name": "cy-upload-image",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "上传图片基础组件",
   "main": "dist/cy-upload-image.common.js",
   "keyword": "upload image cy",
