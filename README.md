@@ -25,6 +25,15 @@ npm run test
 npm run lint
 ```
 
+### publish
+1. 修改README.md里面的版本号
+2. 执行以下命令
+```
+npm run build:lib
+npm login
+npm publish
+```
+
 ### usage
 
 #### props
