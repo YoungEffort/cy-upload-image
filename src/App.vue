@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <cyUploadImage />
+    <cyUploadImage imgType="idcardFront"/>
+    <cyUploadImage imgType="idcardBack"/>
   </div>
 </template>
 
