@@ -1,13 +1,15 @@
 <template>
   <div id="app">
     <cyUploadImage imgType="idcardFront"/>
-    <cyUploadImage imgType="idcardBack"/>
+    <cyUploadImage imgType="custom">
+      <img src="@/assets/u155.jpg" alt="" slot="custom">
+      自定义背景图
+    </cyUploadImage>
   </div>
 </template>
 
 <script>
 import cyUploadImage from './components/cyUploadImage.vue'
-
 export default {
   name: 'app',
   components: {

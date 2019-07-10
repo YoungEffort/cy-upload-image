@@ -39,10 +39,15 @@ npm publish
 #### props
 参数     | 说明       |  类型    | 可选值         |  默认值
 -|-|-|-|-
-imgType  | 图片背景图类型       | String  | default idcardFront idcardBack    | default |
+imgType  | 图片背景图类型       | String  | default idcardFront idcardBack custom    | default |
 required | 是否显示 * 号        | Boolean | -                            | true |
 url      | 上传成功图片地址     | String  | -                                | ' ' |
 requestUrl | 上传地址url        | String  | -                                | ' ' |
+
+#### slot
+name     | 说明  
+-|-
+custom      | 自定义背景图   
 
 #### events
 事件名称     | 说明          |  回调参数

@@ -1,11 +1,14 @@
 <template>
   <div class='upload-img'>
-    <div class="img-box" v-if="url==''">
+    <div class="img-box" v-if="url==''" :style="{height: imgType=='custom' ? 'auto' : '110px'}">
       <div class="parent" v-if="imgType=='default'" @click="handlePopup">
         <img src="../assets/images/common/photo_icon@2x.png" alt="" class="img-1">
       </div>
       <img src="../assets/images/common/身份证示范-正面@3x.png" alt="" v-if="imgType=='idcardFront'" class="img-2" @click="handlePopup">
       <img src="../assets/images/common/身份证示范-背面@3x.png" alt="" v-if="imgType=='idcardBack'" class="img-2" @click="handlePopup">
+      <div  class="img-2" @click="handlePopup"  v-if="imgType=='custom'">
+        <slot name="custom"></slot>
+      </div>
     </div>
     <div class="img-box-sc" v-if="url!=''">
       <img :src="convertUrl" alt="" @click="handleView(convertUrl)">
@@ -144,6 +147,9 @@ export default {
   }
   .img-2 {
     width: 170px;
+    img{
+      width: 100%;
+    }
   }
   .text {
     height: 30px;
