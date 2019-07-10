@@ -42,6 +42,11 @@ export default {
     url: function (val) {
       this.convertUrl = val
       if (!val) { this.$refs.photoref.value = '' }
+    },
+    // 如果 `question` 发生改变，这个函数就会运行
+    // eslint-disable-next-line no-unused-vars
+    isView (newQuestion) {
+      newQuestion ? this.closeTouch() : this.openTouch()
     }
   },
   data() {
@@ -121,6 +126,15 @@ export default {
       var vm = this
       vm.isView = !vm.isView
       vm.viewImg = convertUrl
+    },
+    closeTouch () {
+      document.getElementsByTagName('body')[0].addEventListener('touchmove', this.handler, { passive: false })// 阻止默认事件
+    },
+    openTouch () {
+      document.getElementsByTagName('body')[0].removeEventListener('touchmove', this.handler, { passive: false })// 打开默认事件
+    },
+    handler(e) {
+      e.preventDefault()
     }
   }
 }
