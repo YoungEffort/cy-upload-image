@@ -224,7 +224,7 @@ export default {
     height: 100%;
     line-height: 100%;
     width: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     background: #fff;
