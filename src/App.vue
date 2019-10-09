@@ -4,7 +4,7 @@
     <cyUploadImage imgType="custom"
                    @change="businessChange"
                    :url="businessLicenseImg"
-                   requestUrl="http://113.204.6.164:9102/baitiaoagent/ofile/huawei/uploadZoomimg"
+                   requestUrl="http://113.204.6.164:9102/baitiaouser/ofile/huawei/uploadZoomimg"
     >
       <img src="@/assets/u155.jpg" alt="" slot="custom">
       自定义背景图

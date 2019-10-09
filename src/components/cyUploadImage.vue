@@ -12,7 +12,7 @@
     </div>
     <div class="img-box-sc" v-if="url!=''">
       <img :src="convertUrl" alt="" @click="handleView(convertUrl)">
-      <img src="../assets/images/common/蒙版组 3.png" @click="handleDelete()" class="img-flag">
+      <img src="../assets/images/common/蒙版组 3.png" @click="handleDelete()" class="img-flag" v-show="isClose">
     </div>
     <div class="text">
       <span class="col-red" v-if="required">*</span>
@@ -74,6 +74,10 @@ export default {
     requestUrl: {
       type: String,
       default: ''
+    },
+    isClose: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
@@ -102,7 +106,7 @@ export default {
           var data = res.data[0]
           vm.convertUrl = data.convertUrl
           vm.fullUrl = data.fullUrl
-          vm.$emit('change', vm.convertUrl)
+          vm.$emit('change', vm.convertUrl, data)
         })
         .catch(() => {
           vm.$refs.photoref.value = ''
@@ -120,7 +124,7 @@ export default {
       vm.convertUrl = ''
       vm.fullUrl = ''
       vm.$refs.photoref.value = ''
-      vm.$emit('change', vm.convertUrl)
+      vm.$emit('change', vm.convertUrl, {})
     },
     handleView(convertUrl) {
       var vm = this
