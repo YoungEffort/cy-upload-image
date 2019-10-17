@@ -53,6 +53,6 @@ custom      | 自定义背景图
 #### events
 事件名称     | 说明          |  回调参数
 -|-|-
-change      | 图片上传触发   | 上传成功的图片url 
+change      | 图片上传触发   | callback(url,data)上传成功的图片url,返回其它数据
 
 ### Customize configuration
