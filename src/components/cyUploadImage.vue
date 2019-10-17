@@ -106,9 +106,10 @@ export default {
           var data = res.data[0]
           vm.convertUrl = data.convertUrl
           vm.fullUrl = data.fullUrl
-          vm.$emit('change', vm.convertUrl, data)
+          vm.$emit('change', vm.convertUrl, data, res)
         })
-        .catch(() => {
+        .catch((error) => {
+          vm.$emit('change', '', '', error)
           vm.$refs.photoref.value = ''
           this.$globalToast.close()
           this.$globalToast.warning({
