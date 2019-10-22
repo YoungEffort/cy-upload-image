@@ -44,6 +44,7 @@ required | 是否显示 * 号        | Boolean | -                              
 url      | 上传成功图片地址     | String  | -                                | ' ' |
 requestUrl | 上传地址url        | String  | -                                | ' ' |
 isClose | 是否显示关闭图标      | Boolean | -                                | true |
+headers | 请求头部      | Object | -                                | {} |
 
 #### slot
 name     | 说明  

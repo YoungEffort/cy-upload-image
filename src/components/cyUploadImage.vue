@@ -12,7 +12,7 @@
     </div>
     <div class="img-box-sc" v-if="url!=''">
       <img :src="convertUrl" alt="" @click="handleView(convertUrl)">
-      <img src="../assets/images/common/蒙版组 3.png" @click="handleDelete()" class="img-flag" v-show="isClose">
+      <img src="../assets/images/common/蒙版组 3.png" @click="handleDelete()" class="img-flag" v-show="isClose" alt="">
     </div>
     <div class="text">
       <span class="col-red" v-if="required">*</span>
@@ -71,6 +71,10 @@ export default {
       type: String,
       default: ''
     },
+    headers: {
+      type: Object,
+      default: () => {}
+    },
     requestUrl: {
       type: String,
       default: ''
@@ -94,7 +98,8 @@ export default {
       Axios.request({
         url: vm.requestUrl,
         method: 'post',
-        data: form
+        data: form,
+        headers: this.headers
       }).then(res => {
           this.$globalToast.close()
           if (res.status === '500') {
