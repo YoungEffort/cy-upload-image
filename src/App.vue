@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <cyUploadImage imgType="idcardFront"/>
+    <cyUploadImage />
     <cyUploadImage imgType="custom"
                    @change="businessChange"
                    :url="businessLicenseImg"
-                   requestUrl="http://113.204.6.164:9102/baitiaouser/ofile/huawei/uploadZoomimg"
+                   requestUrl="http://113.204.6.164:9102/baitiaoh5/ofile/huawei/uploadZoomimg"
     >
       <img src="@/assets/u155.jpg" alt="" slot="custom">
       自定义背景图
@@ -17,15 +17,20 @@ export default {
   name: 'app',
   data(){
     return {
-      businessLicenseImg: ''
+      businessLicenseImg: '',
+      url: ''
     }
   },
   components: {
-    cyUploadImage
+    cyUploadImage,
   },
   methods: {
-    businessChange (url){
-      this.businessLicenseImg = url
+    businessChange (status, data){
+       if (status === 'succeed') {
+        this.businessLicenseImg = data.data.convertUrl
+      } else {
+         this.businessLicenseImg = ''
+      }
     }
   }
 }

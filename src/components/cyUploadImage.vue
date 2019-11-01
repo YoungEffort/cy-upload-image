@@ -1,142 +1,153 @@
+<!-- 
+   上传组件
+   秦国胜
+   2019-11-01
+ -->
 <template>
-  <div class='upload-img'>
-    <div class="img-box" v-if="url==''" :style="{height: imgType=='custom' ? 'auto' : '110px'}">
-      <div class="parent" v-if="imgType=='default'" @click="handlePopup">
-        <img src="../assets/images/common/photo_icon@2x.png" alt="" class="img-1">
+  <div class='cy-upload' :class="className">
+    <div class="cy-container">
+      <div v-show="!url" @click="popupModal">
+        <div class="cy-upload-default" v-if="imgType==='default'">
+          <img src="../assets/images/camera.png" alt="" class="cy-camera-img">
+        </div>
+        <img src="../assets/images/idCard.png" alt="" class="cy-default-img"   v-if="imgType==='idcardFront'">
+        <img src="../assets/images/idCard-1.png" alt="" class="cy-default-img"  v-if="imgType==='idcardBack'">
+        <img src="../assets/images/idCard-2.png" alt="" class="cy-default-img"  v-if="imgType==='idcardHand'">
+        <img src="../assets/images/file.png" alt="" class="cy-default-img"  v-if="imgType==='file'">
+        <slot name="custom" v-if="imgType =='custom'"></slot>
       </div>
-      <img src="../assets/images/common/身份证示范-正面@3x.png" alt="" v-if="imgType=='idcardFront'" class="img-2" @click="handlePopup">
-      <img src="../assets/images/common/身份证示范-背面@3x.png" alt="" v-if="imgType=='idcardBack'" class="img-2" @click="handlePopup">
-      <div  class="img-2" @click="handlePopup"  v-if="imgType=='custom'">
-        <slot name="custom"></slot>
+      <div v-show="url" class="cy-upload-view">
+        <img :src="url" alt="" class="cy-default-img" @click="previewModal">
+        <img src="../assets/images/close.png" alt="" class="cy-close" @click="closeDelete" v-show="isClose">
+      </div>
+      <div class="cy-text">
+        <span class="cy-required">*</span>
+        <slot></slot>
       </div>
     </div>
-    <div class="img-box-sc" v-if="url!=''">
-      <img :src="convertUrl" alt="" @click="handleView(convertUrl)">
-      <img src="../assets/images/common/蒙版组 3.png" @click="handleDelete()" class="img-flag" v-show="isClose" alt="">
+    <div class="cy-preview" v-show="isPreview" @click="previewModal">
+       <img :src="url" alt="" class="cy-preview-img" @click="(e) => e.stopImmediatePropagation()">
     </div>
-    <div class="text">
-      <span class="col-red" v-if="required">*</span>
-      <slot></slot>
-    </div>
-    <div class="view-img-box" v-show="isView">
-      <img :src="viewImg" alt="" class="view-img" @click="handleView('')">
-    </div>
-    <mt-popup v-model="popupVisible" position="bottom">
-      <div class="btn1">
-        <span>上传照片</span>
-        <input ref="photoref" type="file" accept="image/*" @change="update($event)"/>
+    <mt-popup v-model="popupVisible" position="bottom" class="cy-upload-popup">
+      <div class="cy-upload-row">
+        <div class="cy-row-name">{{title}}</div>
+        <input class="cy-row-input"
+          ref="photoRef"
+          type="file"
+          accept="image/*"
+          @change="uploading"
+        />
       </div>
-      <div class="btn2" @click="popupVisible=false">取消</div>
+      <div class="cy-popup-close" @click="popupVisible=false">取消</div>
     </mt-popup>
   </div>
 </template>
 
 <script>
-//import { uploadZoomimg } from '@/api/uploadimg'
 import { Popup } from 'mint-ui'
 import 'mint-ui/lib/popup/style.css'
 import Axios from 'axios'
 export default {
-  name: 'cy-uload-image',
+  name: 'cy-upload',
+  components: {
+     mtPopup: Popup
+  },
   watch: {
     url: function (val) {
-      this.convertUrl = val
-      if (!val) { this.$refs.photoref.value = '' }
+      if (!val) { this.$refs.photoRef.value = '' }
     },
     // 如果 `question` 发生改变，这个函数就会运行
     // eslint-disable-next-line no-unused-vars
-    isView (newQuestion) {
+    isPreview (newQuestion) {
       newQuestion ? this.closeTouch() : this.openTouch()
     }
   },
-  data() {
-    return {
-      popupVisible: false,
-      convertUrl: '',
-      viewImg: '',
-      fullUrl: '',
-      isView: false
-    }
-  },
   props: {
-    imgType: {
-      type: String,
-      default: 'default'
-    },
-    required: {
-      type: Boolean,
-      default: true
-    },
-    url: {
-      type: String,
+    // 添加自定义容器class
+    className: {
+      type : String,
       default: ''
     },
-    headers: {
-      type: Object,
-      default: () => {}
+    // default idcardFront idcardBack idcardHand file custom (自定义)
+    imgType: {
+      type : String,
+      default: 'idcardFront'
     },
+    // 上传url
     requestUrl: {
       type: String,
       default: ''
     },
+    // 图片展示地址
+    url: {
+      type: String,
+      default: ''
+    },
+    // 弹窗title
+    title:{
+       type: String,
+       default: '上传照片'
+    },
+    // 是否显示关闭按钮
     isClose: {
       type: Boolean,
       default: true
-    }
+    },
+    // 请求头
+    headers: {
+      type: Object,
+      default: () => {}
+    },
   },
-  components: {
-    mtPopup: Popup
+  data() {
+   return {
+     popupVisible: false, // 弹窗隐藏
+     isPreview: false,// 控制预览
+     upload: '',
+   }
   },
+  mounted() {},
   methods: {
-    update(e) {
-      let vm = this
-      let img1 = e.target.files[0]
+    // 显示上传弹窗
+    popupModal () {
+      this.popupVisible = true
+    },
+    // 绑定上传
+    uploading (e) {
+      let fileData = e.target.files[0]
       let form = new FormData()
-      vm.popupVisible = false
+      form.append('file', fileData, fileData.name)
+      this.popupVisible = false
       this.$globalToast.loading({})
-      form.append('file', img1, img1.name)
       Axios.request({
-        url: vm.requestUrl,
+        url:'http://113.204.6.164:9102/data-platform-app/sensetime/idCardOcrAndUpload',
         method: 'post',
         data: form,
         headers: this.headers
       }).then(res => {
           this.$globalToast.close()
-          if (res.status === '500') {
-            vm.$refs.photoref.value = ''
-            this.$globalToast.warning({
-              message: '上传失败，请重新上传'
-            })
-          }
-          var data = res.data[0]
-          vm.convertUrl = data.convertUrl
-          vm.fullUrl = data.fullUrl
-          vm.$emit('change', vm.convertUrl, res)
+          this.$emit('change', 'succeed', res.data)
+          this.$refs.photoRef.value = ''
         })
         .catch((err) => {
-          vm.$emit('change', '', err)
-          vm.$refs.photoref.value = ''
+          this.$emit('change', 'error', err)
+          this.$refs.photoRef.value = ''
           this.$globalToast.close()
           this.$globalToast.warning({
             message: '上传失败，请重新上传'
           })
         })
     },
-    handlePopup() {
-      this.popupVisible = true
+    // 关闭
+    closeDelete() {
+      this.$refs.photoRef.value = ''
+      this.$emit('change', 'close', {})
     },
-    handleDelete() {
-      var vm = this
-      vm.convertUrl = ''
-      vm.fullUrl = ''
-      vm.$refs.photoref.value = ''
-      vm.$emit('change', vm.convertUrl, {})
+    // 预览
+    previewModal() {
+      this.isPreview ? this.isPreview = false : this.isPreview = true
     },
-    handleView(convertUrl) {
-      var vm = this
-      vm.isView = !vm.isView
-      vm.viewImg = convertUrl
-    },
+    // 解决滚动穿透
     closeTouch () {
       document.getElementsByTagName('body')[0].addEventListener('touchmove', this.handler, { passive: false })// 阻止默认事件
     },
@@ -149,106 +160,87 @@ export default {
   }
 }
 </script>
-<style scoped lang='less'>
-.upload-img {
-  width: 170px;
-  display: inline-block;
-  .parent {
-    position: relative;
-    height: 100px;
-    border: 1px solid #9aaade;
-    border-radius: 5px;
-    .img-1 {
-      width: 50px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-50%);
+<style lang='less'>
+  .cy-upload {
+    display: inline-block;
+    width: 50%;
+    .cy-container{
+      img{
+        width: 100%;
+      }
+      .cy-upload-default{
+        padding: 26px 0;
+        border: 1px solid #e5e5e5;
+        border-radius: 5px;
+      }
+      .cy-camera-img{
+        width: 50px;
+      }
+      .cy-default-img{
+        width: 100%;
+        height: 110px;
+      }
+     
+    }
+    .cy-upload-view{
+      position: relative;
+      .cy-close{
+        position: absolute;
+        top: -8px;
+        right: -7.5px;
+        width: 25px;
+        height: 25px;
+      }
+    }
+    .cy-text {
+      padding: 6px 0 5px;
+      font-size: 14px;
+      text-align: center;
+      .cy-required {
+        color: #e90000;
+        margin-right: 3px;
+      }
     }
   }
-  .img-box {
-    height: 110px;
-  }
-  .img-2 {
-    width: 170px;
-    img{
-      width: 100%;
-    }
-  }
-  .text {
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    font-size: 14px;
-    .col-red {
-      color: #e90000;
-      margin-right: 3px;
-    }
-  }
-  .btn1 {
-    text-align: center;
-    height: 40px;
-    font-size: 14px;
-    border-bottom: 1px solid #e0e0e0;
-    color: #333;
-    position: relative;
-    input {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-    }
-    span {
-      float: left;
-      width: 100%;
-      height: 40px;
-      line-height: 40px;
-    }
-  }
-  .btn2 {
-    text-align: center;
-    height: 40px;
-    line-height: 40px;
-    font-size: 14px;
-    color: #333;
-  }
-  .img-box-sc {
-    height: 100px;
-    border: 1px solid #e6eaf6;
-    position: relative;
-    img {
-      width: 100%;
-      height: 100px;
-    }
-    .img-flag {
-      width: 25px;
-      height: 25px;
-      position: absolute;
-      top: -8px;
-      right: -7.5px;
-    }
-  }
-  .view-img-box {
-    height: 100%;
-    line-height: 100%;
+  .cy-upload-popup{
     width: 100%;
+    font-size: 14px;
+    .cy-upload-row{
+      position: relative;
+      height: 40px;
+      border-bottom: 1px solid #e5e5e5;
+      text-align: center;
+      .cy-row-name{
+        line-height: 40px;
+      }
+      .cy-row-input{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
+    }
+    .cy-popup-close{
+       height: 40px;
+       line-height: 40px;
+    }
+  }
+  .cy-preview{
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
     background: #fff;
-    z-index: 10;
-    text-align: left;
-    .view-img {
-      width: 100%;
+    z-index: 99;
+    .cy-preview-img{
       position: absolute;
-      top: 50%;
+      top: 40%;
+      left: 0;
       transform: translateY(-50%);
+      width: 100%;
     }
   }
-  .mint-popup{
-    width: 100%;
-  }
-}
 </style>
