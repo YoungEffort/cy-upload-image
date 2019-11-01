@@ -17,7 +17,7 @@
         <slot name="custom" v-if="imgType =='custom'"></slot>
       </div>
       <div v-show="url" class="cy-upload-view">
-        <img :src="url" alt="" class="cy-default-img" @click="previewModal">
+        <img :src="url" alt="" class="cy-view-img"  @click="previewModal">
         <img src="../assets/images/close.png" alt="" class="cy-close" @click="closeDelete" v-show="isClose">
       </div>
       <div class="cy-text">
@@ -25,8 +25,8 @@
         <slot></slot>
       </div>
     </div>
-    <div class="cy-preview" v-show="isPreview" @click="previewModal">
-       <img :src="url" alt="" class="cy-preview-img" @click="(e) => e.stopImmediatePropagation()">
+    <div class="cy-preview" v-show="isPreview">
+       <img :src="url" alt="" class="cy-preview-img"  @click="previewModal">
     </div>
     <mt-popup v-model="popupVisible" position="bottom" class="cy-upload-popup">
       <div class="cy-upload-row">
@@ -98,6 +98,7 @@ export default {
       type: Object,
       default: () => {}
     },
+    // 
   },
   data() {
    return {
@@ -114,19 +115,20 @@ export default {
     },
     // 绑定上传
     uploading (e) {
+      if (!this.requestUrl) return
       let fileData = e.target.files[0]
       let form = new FormData()
       form.append('file', fileData, fileData.name)
       this.popupVisible = false
       this.$globalToast.loading({})
       Axios.request({
-        url:'http://113.204.6.164:9102/data-platform-app/sensetime/idCardOcrAndUpload',
+        url: this.requestUrl,
         method: 'post',
         data: form,
         headers: this.headers
       }).then(res => {
           this.$globalToast.close()
-          this.$emit('change', 'succeed', res.data)
+          this.$emit('change', 'succeed', res)
           this.$refs.photoRef.value = ''
         })
         .catch((err) => {
@@ -163,7 +165,6 @@ export default {
 <style lang='less'>
   .cy-upload {
     display: inline-block;
-    width: 50%;
     .cy-container{
       img{
         width: 100%;
@@ -190,6 +191,10 @@ export default {
         right: -7.5px;
         width: 25px;
         height: 25px;
+      }
+      .cy-view-img{
+        width: 100%;
+        height: 110px;
       }
     }
     .cy-text {
@@ -225,6 +230,7 @@ export default {
     .cy-popup-close{
        height: 40px;
        line-height: 40px;
+       text-align: center;
     }
   }
   .cy-preview{
@@ -237,7 +243,7 @@ export default {
     z-index: 99;
     .cy-preview-img{
       position: absolute;
-      top: 40%;
+      top: 46%;
       left: 0;
       transform: translateY(-50%);
       width: 100%;
