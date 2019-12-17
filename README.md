@@ -47,6 +47,7 @@ isClose | 是否显示关闭图标      | Boolean | -                           
 headers | 请求头部      | Object | -                                | {} |
 title | 显示上传图片字符串      | String | -        上传照片                    | '' |
 className | 自定义最外层容器样式      | String | -                            | '' |
+multiple | 多传（只支持ios,不支持预览）      | Boolean | -                            | false |
 
 #### slot
 name     | 说明  

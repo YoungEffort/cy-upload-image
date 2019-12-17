@@ -35,6 +35,7 @@
           ref="photoRef"
           type="file"
           accept="image/*"
+          :multiple = 'multiple'
           @change="uploading"
         />
       </div>
@@ -63,6 +64,11 @@ export default {
     }
   },
   props: {
+    // 多传 ios 支持
+    multiple: {
+       type : Boolean,
+       default: false
+    },
     // 添加自定义容器class
     className: {
       type : String,
@@ -116,9 +122,17 @@ export default {
     // 绑定上传
     uploading (e) {
       if (!this.requestUrl) return
-      let fileData = e.target.files[0]
+      let fileData = ''
       let form = new FormData()
-      form.append('file', fileData, fileData.name)
+      if (this.multiple) {
+        fileData = e.target.files
+        fileData.forEach((item) => {
+          form.append('file', item, item.name)
+        })
+      } else {
+        fileData = e.target.files[0]
+        form.append('file', fileData, fileData.name)
+      }
       this.popupVisible = false
       this.$globalToast.loading({})
       Axios.request({
