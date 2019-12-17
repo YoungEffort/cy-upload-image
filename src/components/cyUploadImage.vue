@@ -130,7 +130,7 @@ export default {
           form.append('file', item, item.name)
         })
       } else {
-        form.append('file', fileData, fileData.name)
+        form.append('file', fileData[0], fileData[0].name)
       }
       this.popupVisible = false
       this.$globalToast.loading({})
