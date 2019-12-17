@@ -122,15 +122,14 @@ export default {
     // 绑定上传
     uploading (e) {
       if (!this.requestUrl) return
-      let fileData = ''
+      let fileData = e.target.files
       let form = new FormData()
-      if (this.multiple) {
-        fileData = e.target.files
+      if (fileData && fileData.length > 1) {
+        fileData = Array.from(fileData)
         fileData.forEach((item) => {
           form.append('file', item, item.name)
         })
       } else {
-        fileData = e.target.files[0]
         form.append('file', fileData, fileData.name)
       }
       this.popupVisible = false
